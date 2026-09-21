@@ -15,6 +15,7 @@ import { calculateResult, type Answers } from "@/lib/safari-scoring";
 import { downloadCertificate } from "@/lib/safari-pdf";
 import { jungleService, type JungleStats } from "@/lib/jungle-stats";
 import { Meter, Modal, SafariButton } from "@/components/safari/Primitives";
+import jungleWelcome from "@/assets/jungle-welcome.jpg";
 
 type Stage = "welcome" | "quiz" | "result" | "certificate";
 
@@ -27,6 +28,71 @@ interface Persisted {
 }
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS) as CategoryId[];
+
+function CreativeCommonsIcons() {
+  return (
+    <span
+      className="inline-flex shrink-0 items-center gap-1"
+      aria-label="Creative Commons Attribution ShareAlike"
+    >
+      <span
+        className="flex h-4 w-4 items-center justify-center rounded-full border border-current text-[7px] font-semibold"
+        aria-hidden="true"
+      >
+        CC
+      </span>
+      <span
+        className="flex h-4 w-4 items-center justify-center rounded-full border border-current"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.4">
+          <circle cx="8" cy="5" r="2" />
+          <path d="M4.5 13c.25-2.4 1.4-3.6 3.5-3.6s3.25 1.2 3.5 3.6" />
+        </svg>
+      </span>
+      <span
+        className="flex h-4 w-4 items-center justify-center rounded-full border border-current"
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          className="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12.5 5.5A5 5 0 1 0 13 10" />
+          <path d="m10.5 3 2 2.5L10 7" />
+        </svg>
+      </span>
+    </span>
+  );
+}
+
+function CopyrightAndLicense({ className = "" }: { className?: string }) {
+  return (
+    <p
+      className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] leading-relaxed text-muted-foreground ${className}`}
+    >
+      <CreativeCommonsIcons />
+      <span>© Pavel Kopylov, 2026.</span>
+      <span>
+        This work is licensed under a{" "}
+        <a
+          className="underline underline-offset-2"
+          href="https://creativecommons.org/licenses/by-sa/4.0/"
+          target="_blank"
+          rel="license noreferrer"
+        >
+          Creative Commons Attribution-ShareAlike 4.0 International License
+        </a>
+        .
+      </span>
+    </p>
+  );
+}
 
 function loadState(): Persisted | null {
   if (typeof window === "undefined") return null;
@@ -159,6 +225,15 @@ export default function AiSafari() {
           <section>
             <h1 className="text-4xl leading-tight sm:text-6xl">{COPY.welcomeHeading}</h1>
             <p className="mt-8 max-w-2xl text-base leading-relaxed sm:text-lg">{COPY.welcomeIntro}</p>
+            <figure className="mt-10 overflow-hidden border border-foreground bg-card">
+              <img
+                src={jungleWelcome}
+                alt="A hand-drawn jungle with a lion, leopard, monkey and turtle"
+                width={1672}
+                height={941}
+                className="aspect-[16/9] w-full object-cover"
+              />
+            </figure>
             <ul className="mt-10 border-t border-foreground text-sm">
               {COPY.welcomeFacts.map((fact) => (
                 <li key={fact} className="border-b border-border py-3">
@@ -466,6 +541,7 @@ export default function AiSafari() {
               <p className="mx-auto mt-8 max-w-md text-xs leading-relaxed text-muted-foreground">
                 {COPY.certificateSmallPrint}
               </p>
+              <CopyrightAndLicense className="mt-8 justify-center" />
             </div>
 
             <div className="no-print mt-8 flex flex-wrap gap-4">
@@ -499,6 +575,7 @@ export default function AiSafari() {
               Privacy
             </button>
           </p>
+          <CopyrightAndLicense className="mt-5" />
         </footer>
       </main>
 

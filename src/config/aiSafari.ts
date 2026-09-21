@@ -123,7 +123,7 @@ export const FEEDBACK = {
 };
 
 export const COPY = {
-  welcomeHeading: "What is your AI animal?",
+  welcomeHeading: "What is your AI animal totem?",
   welcomeIntro:
     "AI can help us move faster, explore ideas and solve difficult problems. But how does it influence the way you think and work? Take a short journey through the AI jungle and reflect on your habits.",
   welcomeFacts: ["9 questions", "About 3 minutes", "No name or email required", "Not a diagnosis"],

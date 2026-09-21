@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import AiSafari from "@/components/safari/AiSafari";
 
-const title = "AI Safari — What is your AI animal?";
+const title = "AI Safari — What is your AI animal totem?";
 const description =
   "A playful three-minute self-reflection exercise about how you rely on generative AI. Nine questions, four animals, no sign-up.";
 
