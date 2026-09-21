@@ -34,7 +34,10 @@ export function calculateResult(answers: Answers): SafariResult {
 
   const overall = average(CATEGORIES.map((c) => scores[c]));
   const ranked = [...CATEGORIES].sort((a, b) => scores[b] - scores[a]);
-  const spread = scores[ranked[0]] - scores[ranked[2]];
+  const top = ranked[0] as CategoryId;
+  const second = ranked[1] as CategoryId;
+  const third = ranked[2] as CategoryId;
+  const spread = scores[top] - scores[third];
 
   const allLow = CATEGORIES.every((c) => scores[c] < RULES.lowThreshold);
   const balanced = spread <= RULES.balancedSpread;
@@ -45,17 +48,17 @@ export function calculateResult(answers: Answers): SafariResult {
       overall,
       primary: "lion",
       secondary: null,
-      balanced: balanced && !allLow ? true : balanced,
+      balanced,
       headline: balanced
         ? "Your habits look balanced across all three themes."
         : "You are a Reflective Lion.",
     };
   }
 
-  const primary = RULES.categoryToAnimal[ranked[0]];
-  const gap = scores[ranked[0]] - scores[ranked[1]];
-  const secondary =
-    gap <= RULES.mixedMargin ? RULES.categoryToAnimal[ranked[1]] : null;
+  const primary = RULES.categoryToAnimal[top];
+  const gap = scores[top] - scores[second];
+  const secondary: AnimalId | null =
+    gap <= RULES.mixedMargin ? RULES.categoryToAnimal[second] : null;
 
   return {
     scores,
