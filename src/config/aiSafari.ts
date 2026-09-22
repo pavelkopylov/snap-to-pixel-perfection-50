@@ -188,12 +188,13 @@ export const COPY = {
     "These thresholds are experimental game rules chosen for reflection, not scientific cut-offs.",
   ],
   privacy: [
-    "Your answers are calculated in your browser and saved only on this device so a refresh does not lose them.",
-    "Your written reflections never leave your browser unless you explicitly consent.",
-    "Nothing is sent anywhere unless you choose to add your animal to the anonymous jungle. In that case only the animal, the three theme scores, the completion date and any survey answers are shared.",
+    "Your answers are calculated in your browser and saved only on this device, so an accidental refresh does not lose them.",
+    "Nothing is sent to a server unless you choose to add your animal to the anonymous AI jungle. In that case only your animal, the three theme scores, the completion date and your one optional answer to “Did your animal feel like you?” are shared.",
     "No name, email, account, location or device fingerprinting is collected, and there are no advertising or social trackers.",
-    "You can delete everything at any time with “Start over and delete my answers”.",
+    "The site no longer asks for any free-text notes, so there is no written text to store or transmit.",
+    "You can delete everything on this device at any time with “Start over and delete my answers”.",
   ],
 };
+
 
 export const STORAGE_KEY = "ai-safari-state-v1";
