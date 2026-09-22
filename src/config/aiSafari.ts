@@ -60,8 +60,9 @@ export const RULES = {
 
 export const ANIMALS: Record<
   AnimalId,
-  { name: string; image: string; description: string; tips: string[] }
+  { name: string; image: string; description: string; why: string; tips: string[] }
 > = {
+
   lion: {
     name: "Reflective Lion",
     image: lionImg,
