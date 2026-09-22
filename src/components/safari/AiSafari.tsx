@@ -5,15 +5,15 @@ import {
   COPY,
   FEEDBACK,
   FRAMING,
+  MEANING,
   QUESTIONS,
-  REFLECTION_QUESTIONS,
   SCALE_OPTIONS,
   STORAGE_KEY,
   type CategoryId,
 } from "@/config/aiSafari";
 import { calculateResult, type Answers } from "@/lib/safari-scoring";
 import { downloadCertificate } from "@/lib/safari-pdf";
-import { jungleService, type JungleStats } from "@/lib/jungle-stats";
+import { jungleService } from "@/lib/jungle-stats";
 import { Meter, Modal, SafariButton } from "@/components/safari/Primitives";
 import jungleWelcome from "@/assets/jungle-welcome.jpg";
 
@@ -23,8 +23,7 @@ interface Persisted {
   answers: Answers;
   index: number;
   stage: Stage;
-  reflections: Record<number, string>;
-  completedAt?: string;
+  completedAt?: string | undefined;
 }
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS) as CategoryId[];
@@ -108,7 +107,6 @@ export default function AiSafari() {
   const [stage, setStage] = useState<Stage>("welcome");
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
-  const [reflections, setReflections] = useState<Record<number, string>>({});
   const [completedAt, setCompletedAt] = useState<string | undefined>();
   const [hydrated, setHydrated] = useState(false);
 
@@ -118,10 +116,7 @@ export default function AiSafari() {
 
   const [consent, setConsent] = useState<"yes" | "no">("no");
   const [shared, setShared] = useState(false);
-  const [stats, setStats] = useState<JungleStats | null>(null);
   const [fit, setFit] = useState<string | undefined>();
-  const [experience, setExperience] = useState<string | undefined>();
-  const [suggestion, setSuggestion] = useState("");
 
   useEffect(() => {
     const saved = loadState();
@@ -129,7 +124,6 @@ export default function AiSafari() {
       setAnswers(saved.answers ?? {});
       setIndex(saved.index ?? 0);
       setStage(saved.stage ?? "welcome");
-      setReflections(saved.reflections ?? {});
       setCompletedAt(saved.completedAt);
     }
     setHydrated(true);
@@ -138,15 +132,16 @@ export default function AiSafari() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      const data: Persisted = { answers, index, stage, reflections, completedAt };
+      const data: Persisted = { answers, index, stage, completedAt };
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch {
       /* storage may be unavailable; the exercise still works */
     }
-  }, [answers, index, stage, reflections, completedAt, hydrated]);
+  }, [answers, index, stage, completedAt, hydrated]);
 
   const complete = QUESTIONS.every((q) => answers[q.id]);
   const result = useMemo(() => (complete ? calculateResult(answers) : null), [answers, complete]);
+  const question = QUESTIONS[index] ?? QUESTIONS[0]!;
 
   const dateLabel = useMemo(
     () =>
@@ -165,20 +160,16 @@ export default function AiSafari() {
       /* ignore */
     }
     setAnswers({});
-    setReflections({});
     setIndex(0);
     setCompletedAt(undefined);
     setShared(false);
     setConsent("no");
     setFit(undefined);
-    setExperience(undefined);
-    setSuggestion("");
     setStage("welcome");
   }
 
   function answer(value: number) {
-    const q = QUESTIONS[index];
-    setAnswers((prev) => ({ ...prev, [q.id]: value }));
+    setAnswers((prev) => ({ ...prev, [question.id]: value }));
     if (index < QUESTIONS.length - 1) {
       setIndex(index + 1);
     } else {
@@ -199,13 +190,12 @@ export default function AiSafari() {
 
   async function share() {
     if (!result || consent !== "yes") return;
-    const next = await jungleService.submit({
+    await jungleService.submit({
       animal: result.primary,
       scores: result.scores,
       completedAt: completedAt ?? new Date().toISOString(),
-      feedback: { fit, experience, suggestion: suggestion.trim() || undefined },
+      ...(fit ? { feedback: { fit } } : {}),
     });
-    setStats(next);
     setShared(true);
   }
 
@@ -276,11 +266,11 @@ export default function AiSafari() {
               />
             </div>
 
-            <h2 className="mt-10 text-2xl leading-snug sm:text-3xl">{QUESTIONS[index].text}</h2>
+            <h2 className="mt-10 text-2xl leading-snug sm:text-3xl">{question.text}</h2>
 
             <div className="mt-8 space-y-3">
               {SCALE_OPTIONS.map((option) => {
-                const selected = answers[QUESTIONS[index].id] === option.value;
+                const selected = answers[question.id] === option.value;
                 return (
                   <button
                     key={option.value}
@@ -309,7 +299,7 @@ export default function AiSafari() {
                     ? setIndex(index + 1)
                     : (setCompletedAt(new Date().toISOString()), setStage("result"))
                 }
-                disabled={!answers[QUESTIONS[index].id]}
+                disabled={!answers[question.id]}
               >
                 {index < QUESTIONS.length - 1 ? "Next →" : "See my animal →"}
               </SafariButton>
@@ -332,6 +322,39 @@ export default function AiSafari() {
               <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed">
                 {ANIMALS[result.primary].description}
               </p>
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                {ANIMALS[result.primary].why}
+              </p>
+            </div>
+
+            <div className="space-y-6 border-t border-foreground pt-8">
+              {CATEGORIES.map((c) => (
+                <Meter key={c} label={CATEGORY_LABELS[c]} score={result.scores[c]} />
+              ))}
+              <p className="text-xs text-muted-foreground">
+                These bars describe tendencies, not problems.
+              </p>
+            </div>
+
+            <div className="border-t border-foreground pt-8">
+              <h2 className="text-2xl">{MEANING.heading}</h2>
+              {MEANING.intro.map((p) => (
+                <p key={p} className="mt-4 text-base leading-relaxed">
+                  {p}
+                </p>
+              ))}
+              <p className="mt-8 text-base leading-relaxed">{MEANING.researchIntro}</p>
+              <div className="mt-6 space-y-6">
+                {MEANING.dimensions.map((d) => (
+                  <div key={d.title} className="border-t border-border pt-5">
+                    <h3 className="text-lg">{d.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed">{d.body}</p>
+                    <p className="mt-2 font-serif text-sm italic text-muted-foreground">“{d.quote}”</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-8 text-sm leading-relaxed">{MEANING.lionNote}</p>
+              <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{MEANING.caveat}</p>
               <button
                 className="mt-6 text-xs underline underline-offset-4"
                 onClick={() => setMethodOpen(true)}
@@ -340,72 +363,14 @@ export default function AiSafari() {
               </button>
             </div>
 
-            <div className="space-y-6 border-t border-foreground pt-8">
-              {CATEGORIES.map((c) => (
-                <Meter key={c} label={CATEGORY_LABELS[c]} score={result.scores[c]} />
-              ))}
-              <p className="text-xs text-muted-foreground">
-                Overall reflection score {result.overall.toFixed(1)} / 5. These bars describe
-                tendencies, not problems.
-              </p>
-            </div>
-
-            <div className="border-t border-foreground pt-8">
-              <h2 className="text-2xl">A few things to try</h2>
-              <ul className="mt-5 space-y-3 text-base leading-relaxed">
-                {ANIMALS[result.primary].tips.map((tip) => (
-                  <li key={tip} className="border-b border-border pb-3">
-                    {tip}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t border-foreground pt-8">
-              <h2 className="text-2xl">Your answers</h2>
-              <ul className="mt-5 text-sm">
-                {QUESTIONS.map((q) => (
-                  <li
-                    key={q.id}
-                    className="flex justify-between gap-6 border-b border-border py-3 leading-relaxed"
-                  >
-                    <span>{q.text}</span>
-                    <span className="whitespace-nowrap text-muted-foreground">
-                      {SCALE_OPTIONS.find((o) => o.value === answers[q.id])?.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t border-foreground pt-8">
-              <h2 className="text-2xl">Optional reflection</h2>
-              <p className="mt-2 text-xs text-muted-foreground">
-                These notes stay in your browser and are never transmitted.
-              </p>
-              <div className="mt-6 space-y-6">
-                {REFLECTION_QUESTIONS.map((q, i) => (
-                  <label key={q} className="block">
-                    <span className="text-sm">{q}</span>
-                    <textarea
-                      value={reflections[i] ?? ""}
-                      onChange={(e) => setReflections({ ...reflections, [i]: e.target.value })}
-                      rows={3}
-                      className="mt-2 w-full border border-foreground bg-card p-3 text-sm"
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-
             <div className="border-t border-foreground pt-8">
               <h2 className="text-2xl">Would you like to add your animal to the anonymous AI jungle?</h2>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                Shared if you agree: your animal category, the three theme scores, the completion date
-                and any survey answers below. Never shared: name, email, account, location, device
-                fingerprint or your written reflections.
+                Shared if you agree: your animal, the three theme scores, the completion date and your
+                optional answer below. Never shared: name, email, account, location or device
+                fingerprint.
               </p>
-              <div className="mt-6 flex gap-3" role="radiogroup" aria-label="Sharing consent">
+              <div className="mt-6 flex flex-wrap gap-3" role="radiogroup" aria-label="Sharing consent">
                 {(["no", "yes"] as const).map((value) => (
                   <button
                     key={value}
@@ -421,80 +386,31 @@ export default function AiSafari() {
                 ))}
               </div>
 
-              <div className="mt-10 space-y-8">
-                {[
-                  { ...FEEDBACK.fit, value: fit, set: setFit },
-                  { ...FEEDBACK.experience, value: experience, set: setExperience },
-                ].map((group) => (
-                  <div key={group.question}>
-                    <p className="text-sm">{group.question}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {group.options.map((option) => (
-                        <button
-                          key={option}
-                          aria-pressed={group.value === option}
-                          onClick={() => group.set(option)}
-                          className={`border border-foreground px-4 py-2 text-sm ${
-                            group.value === option
-                              ? "bg-foreground text-primary-foreground"
-                              : "bg-card hover:bg-accent"
-                          }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                <label className="block">
-                  <span className="text-sm">What would you change or add? (optional)</span>
-                  <textarea
-                    value={suggestion}
-                    onChange={(e) => setSuggestion(e.target.value)}
-                    rows={3}
-                    className="mt-2 w-full border border-foreground bg-card p-3 text-sm"
-                  />
-                  <span className="mt-2 block text-xs text-muted-foreground">
-                    Please do not include names or other personal information.
-                  </span>
-                </label>
+              <div className="mt-8">
+                <p className="text-sm">{FEEDBACK.fit.question}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {FEEDBACK.fit.options.map((option) => (
+                    <button
+                      key={option}
+                      aria-pressed={fit === option}
+                      onClick={() => setFit(option)}
+                      className={`border border-foreground px-4 py-2 text-sm ${
+                        fit === option
+                          ? "bg-foreground text-primary-foreground"
+                          : "bg-card hover:bg-accent"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="mt-8">
                 <SafariButton onClick={share} disabled={consent !== "yes" || shared}>
                   {shared ? "Added to the jungle" : "Send anonymously"}
                 </SafariButton>
-                <SafariButton
-                  variant="outline"
-                  onClick={async () => setStats(await jungleService.getStats())}
-                >
-                  Show jungle statistics
-                </SafariButton>
               </div>
-
-              {stats && (
-                <div className="mt-8 border border-foreground p-5">
-                  <h3 className="text-lg">The jungle so far</h3>
-                  {stats.total === 0 ? (
-                    <p className="mt-2 text-sm text-muted-foreground">No anonymous results yet.</p>
-                  ) : (
-                    <ul className="mt-4 text-sm">
-                      {(Object.keys(ANIMALS) as (keyof typeof ANIMALS)[]).map((key) => (
-                        <li key={key} className="flex justify-between border-b border-border py-2">
-                          <span>{ANIMALS[key].name}s</span>
-                          <span className="text-muted-foreground">
-                            {stats.counts[key]} ({Math.round((stats.counts[key] / stats.total) * 100)}%)
-                          </span>
-                        </li>
-                      ))}
-                      <li className="flex justify-between py-2">
-                        <span>Total anonymous submissions</span>
-                        <span className="text-muted-foreground">{stats.total}</span>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              )}
             </div>
 
             <div className="flex flex-wrap gap-4 border-t border-foreground pt-8">
