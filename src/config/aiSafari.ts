@@ -68,6 +68,7 @@ export const ANIMALS: Record<
     image: lionImg,
     description:
       "You usually pause, evaluate and retain control before bringing AI into the process. You are comfortable using AI, but it does not automatically make the first move.",
+    why: "You appeared as a Lion because your answers stayed fairly low and even across all three themes.",
     tips: [
       "Continue forming your own initial view before consulting AI.",
       "Occasionally ask AI to challenge your reasoning.",
@@ -79,6 +80,7 @@ export const ANIMALS: Record<
     image: leopardImg,
     description:
       "You move quickly, and AI is often your first step. This can make you highly efficient, although your own thinking may occasionally need time to catch up.",
+    why: "You appeared as a Leopard because you most often recognised situations where AI was your first move.",
     tips: [
       "Write down your first idea before opening AI.",
       "Pause before accepting the first useful-looking answer.",
@@ -90,6 +92,7 @@ export const ANIMALS: Record<
     image: monkeyImg,
     description:
       "You enjoy exploring possibilities with AI. Sometimes the exploration becomes more influential than expected, making it harder to explain, evaluate or complete the work independently.",
+    why: "You appeared as a Monkey because you most often recognised situations where working or deciding on your own felt harder after using AI.",
     tips: [
       "Decide what you need before beginning a conversation with AI.",
       "Choose a stopping point.",
@@ -101,6 +104,7 @@ export const ANIMALS: Record<
     image: turtleImg,
     description:
       "AI can act like a protective shell, providing reassurance when you feel uncertain. When it is unavailable, moving forward may feel less comfortable.",
+    why: "You appeared as a Turtle because you most often recognised situations where being without AI felt uncomfortable.",
     tips: [
       "Take the first small step independently before inviting AI in.",
       "Keep an alternative way to complete familiar tasks.",
@@ -108,6 +112,39 @@ export const ANIMALS: Record<
     ],
   },
 };
+
+/** “What does your animal mean?” section on the result page. */
+export const MEANING = {
+  heading: "What does your animal mean?",
+  intro: [
+    "This is a playful self-assessment, not a diagnosis. There are no good or bad animals.",
+    "The result is simply a way to reflect on your own AI habits and the decisions you make around them.",
+  ],
+  researchIntro:
+    "The research paper that inspired this exercise describes three dimensions of generative AI dependency:",
+  dimensions: [
+    {
+      title: "Preoccupation (Leopard)",
+      body: "AI increasingly occupies your thoughts. You may look forward to using it, feel an urge to turn to it, or let it shape everyday decisions.",
+      quote: "AI is becoming your first thought, not just a tool you choose.",
+    },
+    {
+      title: "Negative consequences (Monkey)",
+      body: "You may worry that relying on AI affects your performance or your confidence in completing tasks and making decisions independently.",
+      quote: "AI helps you get things done — but are you losing confidence in doing them yourself?",
+    },
+    {
+      title: "Withdrawal (Turtle)",
+      body: "Limited access to AI may leave you frustrated, restless, disconnected or uncomfortable.",
+      quote: "When AI is out of reach, it can feel as though your protective shell is gone.",
+    },
+  ],
+  lionNote:
+    "The Lion represents relatively low or balanced responses across these three dimensions: “You know when to use AI and when to pause and think for yourself.”",
+  caveat:
+    "The four animals are AI Safari’s own playful interpretation. They are not categories established or validated by the paper.",
+};
+
 
 export const REFLECTION_QUESTIONS = [
   "Where does AI genuinely help me think or learn better?",
