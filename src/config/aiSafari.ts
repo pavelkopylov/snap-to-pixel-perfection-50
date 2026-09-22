@@ -163,8 +163,14 @@ export const FEEDBACK = {
 export const COPY = {
   welcomeHeading: "What is your AI animal totem?",
   welcomeIntro:
-    "AI can help us move faster, explore ideas and solve difficult problems. But how does it influence the way you think and work? Take a short journey through the AI jungle and reflect on your habits.",
-  welcomeFacts: ["9 questions", "About 3 minutes", "No name or email required", "Not a diagnosis"],
+    "AI can help us move faster, explore ideas and solve difficult problems. But how does it influence the way you think and work? Take a short journey through the AI jungle to assess how dependant you are on AI in your daily activites.",
+  welcomeFacts: [
+    "9 questions to assess your dependency on AI tools",
+    "About 3 minutes",
+    "No name or email required",
+    "Not a diagnosis - this is primarily a reflection tool",
+  ],
+
   startButton: "Start the safari →",
   disclaimer:
     "This is a playful self-reflection exercise. It is not a validated assessment, medical tool, psychological diagnosis or a measure of cognitive ability.",
