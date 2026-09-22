@@ -60,13 +60,15 @@ export const RULES = {
 
 export const ANIMALS: Record<
   AnimalId,
-  { name: string; image: string; description: string; tips: string[] }
+  { name: string; image: string; description: string; why: string; tips: string[] }
 > = {
+
   lion: {
     name: "Reflective Lion",
     image: lionImg,
     description:
       "You usually pause, evaluate and retain control before bringing AI into the process. You are comfortable using AI, but it does not automatically make the first move.",
+    why: "You appeared as a Lion because your answers stayed fairly low and even across all three themes.",
     tips: [
       "Continue forming your own initial view before consulting AI.",
       "Occasionally ask AI to challenge your reasoning.",
@@ -78,6 +80,7 @@ export const ANIMALS: Record<
     image: leopardImg,
     description:
       "You move quickly, and AI is often your first step. This can make you highly efficient, although your own thinking may occasionally need time to catch up.",
+    why: "You appeared as a Leopard because you most often recognised situations where AI was your first move.",
     tips: [
       "Write down your first idea before opening AI.",
       "Pause before accepting the first useful-looking answer.",
@@ -89,6 +92,7 @@ export const ANIMALS: Record<
     image: monkeyImg,
     description:
       "You enjoy exploring possibilities with AI. Sometimes the exploration becomes more influential than expected, making it harder to explain, evaluate or complete the work independently.",
+    why: "You appeared as a Monkey because you most often recognised situations where working or deciding on your own felt harder after using AI.",
     tips: [
       "Decide what you need before beginning a conversation with AI.",
       "Choose a stopping point.",
@@ -100,6 +104,7 @@ export const ANIMALS: Record<
     image: turtleImg,
     description:
       "AI can act like a protective shell, providing reassurance when you feel uncertain. When it is unavailable, moving forward may feel less comfortable.",
+    why: "You appeared as a Turtle because you most often recognised situations where being without AI felt uncomfortable.",
     tips: [
       "Take the first small step independently before inviting AI in.",
       "Keep an alternative way to complete familiar tasks.",
@@ -107,6 +112,39 @@ export const ANIMALS: Record<
     ],
   },
 };
+
+/** “What does your animal mean?” section on the result page. */
+export const MEANING = {
+  heading: "What does your animal mean?",
+  intro: [
+    "This is a playful self-assessment, not a diagnosis. There are no good or bad animals.",
+    "The result is simply a way to reflect on your own AI habits and the decisions you make around them.",
+  ],
+  researchIntro:
+    "The research paper that inspired this exercise describes three dimensions of generative AI dependency:",
+  dimensions: [
+    {
+      title: "Preoccupation (Leopard)",
+      body: "AI increasingly occupies your thoughts. You may look forward to using it, feel an urge to turn to it, or let it shape everyday decisions.",
+      quote: "AI is becoming your first thought, not just a tool you choose.",
+    },
+    {
+      title: "Negative consequences (Monkey)",
+      body: "You may worry that relying on AI affects your performance or your confidence in completing tasks and making decisions independently.",
+      quote: "AI helps you get things done — but are you losing confidence in doing them yourself?",
+    },
+    {
+      title: "Withdrawal (Turtle)",
+      body: "Limited access to AI may leave you frustrated, restless, disconnected or uncomfortable.",
+      quote: "When AI is out of reach, it can feel as though your protective shell is gone.",
+    },
+  ],
+  lionNote:
+    "The Lion represents relatively low or balanced responses across these three dimensions: “You know when to use AI and when to pause and think for yourself.”",
+  caveat:
+    "The four animals are AI Safari’s own playful interpretation. They are not categories established or validated by the paper.",
+};
+
 
 export const REFLECTION_QUESTIONS = [
   "Where does AI genuinely help me think or learn better?",
@@ -125,8 +163,14 @@ export const FEEDBACK = {
 export const COPY = {
   welcomeHeading: "What is your AI animal totem?",
   welcomeIntro:
-    "AI can help us move faster, explore ideas and solve difficult problems. But how does it influence the way you think and work? Take a short journey through the AI jungle and reflect on your habits.",
-  welcomeFacts: ["9 questions", "About 3 minutes", "No name or email required", "Not a diagnosis"],
+    "AI can help us move faster, explore ideas and solve difficult problems. But how does it influence the way you think and work? Take a short journey through the AI jungle to assess how dependant you are on AI in your daily activites.",
+  welcomeFacts: [
+    "9 questions to assess your dependency on AI tools",
+    "About 3 minutes",
+    "No name or email required",
+    "Not a diagnosis - this is primarily a reflection tool",
+  ],
+
   startButton: "Start the safari →",
   disclaimer:
     "This is a playful self-reflection exercise. It is not a validated assessment, medical tool, psychological diagnosis or a measure of cognitive ability.",
@@ -144,12 +188,13 @@ export const COPY = {
     "These thresholds are experimental game rules chosen for reflection, not scientific cut-offs.",
   ],
   privacy: [
-    "Your answers are calculated in your browser and saved only on this device so a refresh does not lose them.",
-    "Your written reflections never leave your browser unless you explicitly consent.",
-    "Nothing is sent anywhere unless you choose to add your animal to the anonymous jungle. In that case only the animal, the three theme scores, the completion date and any survey answers are shared.",
+    "Your answers are calculated in your browser and saved only on this device, so an accidental refresh does not lose them.",
+    "Nothing is sent to a server unless you choose to add your animal to the anonymous AI jungle. In that case only your animal, the three theme scores, the completion date and your one optional answer to “Did your animal feel like you?” are shared.",
     "No name, email, account, location or device fingerprinting is collected, and there are no advertising or social trackers.",
-    "You can delete everything at any time with “Start over and delete my answers”.",
+    "The site no longer asks for any free-text notes, so there is no written text to store or transmit.",
+    "You can delete everything on this device at any time with “Start over and delete my answers”.",
   ],
 };
+
 
 export const STORAGE_KEY = "ai-safari-state-v1";
